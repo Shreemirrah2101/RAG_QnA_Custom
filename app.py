@@ -74,10 +74,14 @@ def return_response(question):
         answer+='\nFile-Name:\n'
         answer+=source[i]['file_name']+'\n'
         file=source[i]['file_name']
+        answer+=source[i]['file_name']+'\nPage: '
+        answer+=source[i]['page_label']+'\n'
         blob_client = blob_service_client.get_blob_client(container_name, file)
         blob_url = blob_client.url
+        blob_url=blob_url.replace('https://shreemirrahrag.blob.core.windows.net/ragfiles/ragfiles','https://shreemirrahrag.blob.core.windows.net/ragfiles')
         answer+='\nFile-Path:\n'
         answer+=blob_url+'\n'
+        
     return answer
 
 
