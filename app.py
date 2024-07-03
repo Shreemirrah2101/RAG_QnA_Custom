@@ -1,6 +1,5 @@
 from llama_index.readers.azstorage_blob import AzStorageBlobReader
 from azure.storage.blob import BlobServiceClient,generate_account_sas, ResourceTypes, AccountSasPermissions
-
 from llama_index.llms.azure_openai import AzureOpenAI
 from llama_index.embeddings.azure_openai import AzureOpenAIEmbedding
 from llama_index.core import VectorStoreIndex,StorageContext,Settings
@@ -64,25 +63,18 @@ query_engine = index.as_query_engine(similarity_top_k = 6, alpha=0.5,node_postpr
 def return_response(question):
     response = query_engine.query(question)
     answer=''
-    response_text=response.response
-    answer+=response_text+'\n\n'+'Source:\n\n'
+    st.write(response.response)
+    st.write('\n\n'+'Source:\n\n')
     source=response.metadata
 
     for i in source.keys():
-        answer+='\nSource:\n'
-        answer+=source[i]['document_title']+'\n'
-        answer+='\nFile-Name:\n'
-        answer+=source[i]['file_name']+'\n'
+        st.write('\nSource:  '+source[i]['document_title']+'\t')    
         file=source[i]['file_name']
-        answer+=source[i]['file_name']+'\nPage: '
-        answer+=source[i]['page_label']+'\n'
         blob_client = blob_service_client.get_blob_client(container_name, file)
         blob_url = blob_client.url
         blob_url=blob_url.replace('https://shreemirrahrag.blob.core.windows.net/ragfiles/ragfiles','https://shreemirrahrag.blob.core.windows.net/ragfiles')
-        answer+='\nFile-Path:\n'
-        answer+=blob_url+'\n'
-        
-    return answer
+        st.markdown(f"[{file}]({blob_url})"+"\tPage: "+source[i]['page_label']+'\n')
+
 
 
 
@@ -93,4 +85,4 @@ submit=st.button("Ask")
 
 if submit:
     st.subheader("Implementing...")
-    st.write(return_response(input))
+    return_response(input)
